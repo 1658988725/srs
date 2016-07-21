@@ -1164,14 +1164,14 @@ string srs_auth_token_md5_encode(std::string nonce, std::string password, std::s
 	ss >> data;
 
 	unsigned MD5_LEN = 16;
-	unsigned char md5[MD5_LEN] = { 0 };
+	unsigned char md5[MD5_LEN];
 
 	MD5_CTX ctx;
 	MD5_Init(&ctx);
 	MD5_Update(&ctx, data.c_str(), data.length());
 	MD5_Final(md5, &ctx);
 
-	char token[MD5_LEN * 2] = { '\0' };
+	char token[MD5_LEN * 2];
 	for (unsigned i = 0, j = 0; i < MD5_LEN; i++) {
 		sprintf(token + j, "%02x", md5[i]);
 		j += 2;
