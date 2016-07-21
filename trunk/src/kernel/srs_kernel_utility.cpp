@@ -1158,23 +1158,24 @@ string srs_av_base64_decode(std::string in) {
 }
 
 string srs_auth_token_md5_encode(std::string nonce, std::string password, std::string expire) {
-        char tmp[3]={'\0'}, token[33]={'\0'};
-        unsigned char md[16];
+	std::stringstream ss;
+	std::string data;
+	ss << nonce << password << expire;
+	ss >> data;
 
-        std::stringstream ss;
-        std::string data;
-        ss << nonce << password << expire;
-        ss >> data;
+	unsigned MD5_LEN = 16;
+	unsigned char md5[MD5_LEN] = { 0 };
 
-        MD5_CTX ctx;
-        MD5_Init(&ctx);
-        MD5_Update(&ctx, data.c_str(), data.length());
-        MD5_Final(md,&ctx);
+	MD5_CTX ctx;
+	MD5_Init(&ctx);
+	MD5_Update(&ctx, data.c_str(), data.length());
+	MD5_Final(md5, &ctx);
 
-        for(int i=0; i<sizeof(md); i++ ) {
-                sprintf(tmp,"%02x",md[i]);
-                strcat(token,tmp);
-        }
-        //srs_info("nonce=%d&token=%s", nonce, token);
-        return token;
+	char token[MD5_LEN * 2] = { '\0' };
+	for (unsigned i = 0, j = 0; i < MD5_LEN; i++) {
+		sprintf(token + j, "%02x", md5[i]);
+		j += 2;
+	}
+	//srs_info("nonce=%d&token=%s", nonce, token);
+	return token;
 }
