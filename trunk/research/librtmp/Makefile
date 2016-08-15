@@ -1,3 +1,4 @@
+#arm-linux-gnueabihf-gcc or mipsel-openwrt-linux-gcc
 GCC = gcc
 
 ifeq ($(HANDSHAKE),)
@@ -59,7 +60,7 @@ ifeq ($(GCC), gcc)
     EXTRA_CXX_FLAG = -g -O0 -ldl -lstdc++
 endif
 # for arm.
-ifeq ($(GCC), arm-linux-gnueabi-gcc)
+ifeq ($(GCC), arm-linux-gnueabihf-gcc)
     EXTRA_CXX_FLAG = -g -O0 -ldl -static -lstdc++
 endif
 # for mips, add -lgcc_eh, or stl compile failed.

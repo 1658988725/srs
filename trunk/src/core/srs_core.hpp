@@ -130,14 +130,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * important check for st(state-threads),
  * only support the following cpus:
- *      1. i386/amd64/x86_64
- *      2. arm, glibc <= 2.15
+ *      1. i386/amd64/x86_64/arm/mips
+ *      2. arm, glibc <= 2.19
  */
-#if !defined(__amd64__) && !defined(__x86_64__) && !defined(__i386__) && !defined(__arm__)
-    #error "only support i386/amd64/x86_64/arm cpu"
+#if !defined(__amd64__) && !defined(__x86_64__) && !defined(__i386__) && !defined(__arm__) && !defined(__mips__)
+    #error "only support i386/amd64/x86_64/arm/mips cpu"
 #endif
-#if defined(__arm__) && (__GLIBC__ != 2 || __GLIBC_MINOR__ > 15)
-    #error "for arm, only support glibc <= 2.15"
+#if defined(__arm__) && (__GLIBC__ != 2 || __GLIBC_MINOR__ > 19)
+    #error "for arm, only support glibc <= 2.19"
 #endif
 
 #endif

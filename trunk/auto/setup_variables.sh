@@ -4,12 +4,12 @@
 
 # when arm specified, setup the cross build variables.
 if [ $SRS_ARM_UBUNTU12 = YES ]; then
-    __SrsArmCC="arm-linux-gnueabi-gcc";
-    __SrsArmGCC="arm-linux-gnueabi-gcc";
-    __SrsArmCXX="arm-linux-gnueabi-g++";
-    __SrsArmAR="arm-linux-gnueabi-ar";
-    __SrsArmLD="arm-linux-gnueabi-ld";
-    __SrsArmRANDLIB="arm-linux-gnueabi-ranlib";
+    __SrsArmCC="arm-linux-gnueabihf-gcc";
+    __SrsArmGCC="arm-linux-gnueabihf-gcc";
+    __SrsArmCXX="arm-linux-gnueabihf-g++";
+    __SrsArmAR="arm-linux-gnueabihf-ar";
+    __SrsArmLD="arm-linux-gnueabihf-ld";
+    __SrsArmRANDLIB="arm-linux-gnueabihf-ranlib";
 fi
 
 if [ $SRS_MIPS_UBUNTU12 = YES ]; then
