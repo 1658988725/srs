@@ -36,7 +36,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <fcntl.h>
 #include <stdlib.h>
 
-#include <openssl/md5.h>
 #include <sstream>
 using namespace std;
 
@@ -45,6 +44,8 @@ using namespace std;
 #include <srs_kernel_buffer.hpp>
 #include <srs_kernel_flv.hpp>
 #include <srs_core_autofree.hpp>
+
+#include <cMD5.hpp>
 
 // this value must:
 // equals to (SRS_SYS_CYCLE_INTERVAL*SRS_SYS_TIME_RESOLUTION_MS_TIMES)*1000
@@ -1163,19 +1164,7 @@ string srs_auth_token_md5_encode(std::string nonce, std::string password, std::s
 	ss << nonce << password << expire;
 	ss >> data;
 
-	unsigned MD5_LEN = 16;
-	unsigned char md5[MD5_LEN];
-
-	MD5_CTX ctx;
-	MD5_Init(&ctx);
-	MD5_Update(&ctx, data.c_str(), data.length());
-	MD5_Final(md5, &ctx);
-
-	char token[MD5_LEN * 2];
-	for (unsigned i = 0, j = 0; i < MD5_LEN; i++) {
-		sprintf(token + j, "%02x", md5[i]);
-		j += 2;
-	}
-	//srs_info("nonce=%d&token=%s", nonce, token);
-	return token;
+	MD5 iMD5;
+	iMD5.GenerateMD5((unsigned char*)data.c_str(), (int)data.length());
+	return iMD5.ToString();
 }
