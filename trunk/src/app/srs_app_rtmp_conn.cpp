@@ -431,14 +431,10 @@ int SrsRtmpConn::do_cycle()
     	 if(!_srs_config->get_vhost_auth_enabled(req->vhost))
     		 break;
 
-    	 string nonce, token, expire = "-1";
+    	 string nonce, token, password, expire = "-1";
     	 map<string, string>::iterator iter;
     	 map<string,string> query;
     	 srs_parse_query_string(req->param, query);
-    	 iter = query.find("nonce");
-    	 if (iter != query.end()) {
-    	 		nonce = iter->second;
-    	 }
 
 		 iter = query.find("expire");
 		 if (iter != query.end()){
@@ -447,14 +443,19 @@ int SrsRtmpConn::do_cycle()
 
 		 iter = query.find("token");
 		 if (iter != query.end()){
-			 token = iter->second;
+			 string ss = iter->second;
+			 token = ss.substr(0,32);
+			 nonce = ss.substr(32,ss.length()-32);
 		 }
 
 		 unsigned flag = 0;
-		 if (expire == "-1" && _srs_config->get_vhost_auth_publisher_enabled(req->vhost))
+		 if (expire == "-1" && _srs_config->get_vhost_auth_publisher_enabled(req->vhost)) {
+			 password = _srs_config->get_vhost_auth_publisher_password(req->vhost);
 			 flag = 1;
-		 else if(_srs_config->get_vhost_auth_player_enabled(req->vhost))
+		 } else if(_srs_config->get_vhost_auth_player_enabled(req->vhost)) {
+			 password = _srs_config->get_vhost_auth_player_password(req->vhost);
 			 flag = 2;
+		 }
 
 		 if(flag > 0) {
 			 if(nonce.empty() || token.empty() || query.empty()) {
@@ -464,7 +465,7 @@ int SrsRtmpConn::do_cycle()
 				 return ret;
 			 }
 
- 			 if(srs_auth_token_md5_encode(nonce, _srs_config->get_vhost_auth_password(req->vhost), expire) != token) {
+ 			 if(srs_auth_token_md5_encode(nonce, password, expire) != token) {
  				 ret = ERROR_RTMP_CLIENT_AUTH_INVALID;
  				 srs_error("RTMP token authentication fail. "
  						 	 	"tcUrl=%s, vhost=%s, ret=%d", req->tcUrl.c_str(), req->vhost.c_str(), ret);

@@ -7266,21 +7266,6 @@ bool SrsConfig::get_vhost_auth_enabled(string vhost)
     return SRS_CONF_PERFER_FALSE(conf->arg0());
 }
 
-string SrsConfig::get_vhost_auth_password(string vhost)
-{
-    SrsConfDirective* conf = get_vhost_auth(vhost);
-    if (!conf) {
-        return NULL;
-    }
-
-    conf = conf->get("password");
-    if (!conf || conf->arg0().empty()) {
-        return NULL;
-    }
-
-    return conf->arg0();
-}
-
 bool  SrsConfig::get_vhost_auth_publisher_enabled(string vhost)
 {
     SrsConfDirective* conf = get_vhost_auth(vhost);
@@ -7296,6 +7281,21 @@ bool  SrsConfig::get_vhost_auth_publisher_enabled(string vhost)
     return SRS_CONF_PERFER_FALSE(conf->arg0());
 }
 
+string SrsConfig::get_vhost_auth_publisher_password(string vhost)
+{
+    SrsConfDirective* conf = get_vhost_auth(vhost);
+    if (!conf) {
+        return NULL;
+    }
+
+    conf = conf->get("publisher_pwd");
+    if (!conf || conf->arg0().empty()) {
+        return NULL;
+    }
+
+    return conf->arg0();
+}
+
 bool  SrsConfig::get_vhost_auth_player_enabled(string vhost)
 {
     SrsConfDirective* conf = get_vhost_auth(vhost);
@@ -7309,4 +7309,19 @@ bool  SrsConfig::get_vhost_auth_player_enabled(string vhost)
     }
 
     return SRS_CONF_PERFER_FALSE(conf->arg0());
+}
+
+string SrsConfig::get_vhost_auth_player_password(string vhost)
+{
+    SrsConfDirective* conf = get_vhost_auth(vhost);
+    if (!conf) {
+        return NULL;
+    }
+
+    conf = conf->get("player_pwd");
+    if (!conf || conf->arg0().empty()) {
+        return NULL;
+    }
+
+    return conf->arg0();
 }
