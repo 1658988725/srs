@@ -138,7 +138,7 @@ extern void srs_parse_rtmp_url(
 
 // genereate the rtmp url, for instance, rtmp://server:port/app...vhost...vhost/stream
 extern std::string srs_generate_rtmp_url(
-    std::string server, int port, std::string vhost, std::string app, std::string stream
+    std::string server, int port, std::string vhost, std::string app, std::string stream, std::string param = ""
 );
 
 // write large numbers of iovs.

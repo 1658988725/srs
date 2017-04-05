@@ -177,7 +177,7 @@ int SrsSimpleRtmpClient::connect_app()
     data->set("srs_server_ip", SrsAmf0Any::str(local_ip.c_str()));
     
     // generate the tcUrl
-    std::string param = "";
+    std::string param = req->param;
     std::string target_vhost = req->vhost;
     std::string tc_url = srs_generate_tc_url(req->host, req->vhost, req->app, req->port, param);
     
@@ -425,13 +425,11 @@ int SrsRtmpConn::do_cycle()
 
     //Reference:  https://github.com/ossrs/srs/wiki/v1_CN_DRM#token-authentication
     do {
-    	 if(req->ip == "localhost" || req->ip == "127.0.0.1")
-    		 break;
+		if (req->ip == "localhost" || req->ip == "127.0.0.1"
+				|| !_srs_config->get_vhost_auth_enabled(req->vhost))
+			break;
 
-    	 if(!_srs_config->get_vhost_auth_enabled(req->vhost))
-    		 break;
-
-    	 string nonce, token, password, expire = "-1";
+    	 string auth_str, password, expire = "-1";
     	 map<string, string>::iterator iter;
     	 map<string,string> query;
     	 srs_parse_query_string(req->param, query);
@@ -441,33 +439,37 @@ int SrsRtmpConn::do_cycle()
 			 expire = iter->second;
 		 }
 
-		 iter = query.find("token");
-		 if (iter != query.end()){
-			 string ss = iter->second;
-			 token = ss.substr(0,32);
-			 nonce = ss.substr(32,ss.length()-32);
-		 }
-
-		 unsigned flag = 0;
-		 if (expire == "-1" && _srs_config->get_vhost_auth_publisher_enabled(req->vhost)) {
+		 bool needAuth = false;
+		 if (expire == "-1") {
 			 password = _srs_config->get_vhost_auth_publisher_password(req->vhost);
-			 flag = 1;
-		 } else if(_srs_config->get_vhost_auth_player_enabled(req->vhost)) {
+			 needAuth = !password.empty();
+		 } else {
 			 password = _srs_config->get_vhost_auth_player_password(req->vhost);
-			 flag = 2;
+			 needAuth = !password.empty();
 		 }
 
-		 if(flag > 0) {
-			 if(nonce.empty() || token.empty() || query.empty()) {
+		 if(needAuth) {
+			 iter = query.find("token");
+			 if (iter != query.end()){
+				 auth_str = iter->second;
+			 }
+
+			 if(query.empty() || auth_str.empty()) {
 				 ret = ERROR_RTMP_CLIENT_NEED_AUTH;
-				 srs_error("RTMP need token authentication. "
+				 srs_warn("RTMP need token authentication. "
 				 				"tcUrl=%s, vhost=%s, ret=%d", req->tcUrl.c_str(), req->vhost.c_str(), ret);
 				 return ret;
 			 }
 
- 			 if(srs_auth_token_md5_encode(nonce, password, expire) != token) {
+			 string token, nonce;
+			 if (auth_str.length() > 32) {
+				 token = auth_str.substr(0,32);
+				 nonce = auth_str.substr(32,auth_str.length()-32);
+			 }
+
+ 			 if(token.empty() || nonce.empty() || srs_auth_token_md5_encode(nonce, password, expire) != token) {
  				 ret = ERROR_RTMP_CLIENT_AUTH_INVALID;
- 				 srs_error("RTMP token authentication fail. "
+ 				 srs_warn("RTMP token authentication fail. "
  						 	 	"tcUrl=%s, vhost=%s, ret=%d", req->tcUrl.c_str(), req->vhost.c_str(), ret);
  				 return ret;
  			 }

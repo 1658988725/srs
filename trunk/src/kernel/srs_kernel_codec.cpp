@@ -276,6 +276,7 @@ bool SrsFlvCodec::video_is_acceptable(char* data, int size)
     char frame_type = data[0];
     char codec_id = frame_type & 0x0f;
     frame_type = (frame_type >> 4) & 0x0f;
+    //srs_warn("size=%d, codec_id=%d, frame_type=%d\r\n", size, codec_id, frame_type);
     
     if (frame_type < 1 || frame_type > 5) {
         return false;

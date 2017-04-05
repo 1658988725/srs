@@ -1,5 +1,5 @@
-#arm-linux-gnueabihf-gcc or mipsel-openwrt-linux-gcc
-GCC = gcc
+#arm-linux-gnueabihf-gcc or mipsel-openwrt-linux-gcc or arm-none-linux-gnueabi-gcc
+GCC = arm-linux-gnueabihf-gcc
 
 ifeq ($(HANDSHAKE),)
     ST_ALL      = help

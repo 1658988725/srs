@@ -174,7 +174,6 @@ void SrsHttpHooks::on_unpublish(string url, SrsRequest* req)
     
     SrsJsonObject* obj = SrsJsonAny::object();
     SrsAutoFree(SrsJsonObject, obj);
-    
     obj->set("action", SrsJsonAny::str("on_unpublish"));
     obj->set("client_id", SrsJsonAny::integer(client_id));
     obj->set("ip", SrsJsonAny::str(req->ip.c_str()));

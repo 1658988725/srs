@@ -1444,18 +1444,12 @@ public:
     * get whether vhost enabled auth
     */
     virtual bool  get_vhost_auth_enabled(std::string vhost);
-    /**
-    * get whether whost publisher auth  enabled.
-    */
-    virtual bool   get_vhost_auth_publisher_enabled(std::string vhost);
+
     /**
     * get the auth publisher password for vhost.
     */
     virtual std::string get_vhost_auth_publisher_password(std::string vhost);
-    /**
-    * get whether whost player auth  enabled.
-    */
-    virtual bool   get_vhost_auth_player_enabled(std::string vhost);
+
     /**
     * get the auth publisher password for vhost.
     */

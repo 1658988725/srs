@@ -86,7 +86,6 @@ SrsEdgeRtmpUpstream::~SrsEdgeRtmpUpstream()
 int SrsEdgeRtmpUpstream::connect(SrsRequest* r, SrsLbRoundRobin* lb)
 {
     int ret = ERROR_SUCCESS;
-    
     SrsRequest* req = r;
     
     std::string url;
@@ -101,7 +100,7 @@ int SrsEdgeRtmpUpstream::connect(SrsRequest* r, SrsLbRoundRobin* lb)
             srs_warn("vhost %s removed. ret=%d", req->vhost.c_str(), ret);
             return ret;
         }
-        
+
         // select the origin.
         std::string server = lb->select(conf->args);
         int port = SRS_CONSTS_RTMP_DEFAULT_PORT;
@@ -122,7 +121,8 @@ int SrsEdgeRtmpUpstream::connect(SrsRequest* r, SrsLbRoundRobin* lb)
         // @see https://github.com/ossrs/srs/issues/372
         std::string vhost = _srs_config->get_vhost_edge_transform_vhost(req->vhost);
         vhost = srs_string_replace(vhost, "[vhost]", req->vhost);
-        url = srs_generate_rtmp_url(server, port, vhost, req->app, req->stream);
+        url = srs_generate_rtmp_url(server, port, vhost, req->app, req->stream, req->param);
+        //srs_trace("rtmp url: %s", url.c_str());
     }
     
     int64_t cto = SRS_EDGE_INGESTER_TIMEOUT_US;
@@ -461,6 +461,8 @@ int SrsEdgeForwarder::start()
         vhost = srs_string_replace(vhost, "[vhost]", req->vhost);
         
         url = srs_generate_rtmp_url(server, port, vhost, req->app, req->stream);
+
+        srs_trace("\n\n%s\n\n", srs_generate_rtmp_url(server, port, vhost, req->app, req->stream, req->param).c_str());
     }
     
     // open socket.

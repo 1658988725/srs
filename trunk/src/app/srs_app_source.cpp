@@ -1740,6 +1740,8 @@ int SrsSource::on_video(SrsCommonMessage* shared_video)
     }
     last_packet_time = shared_video->header.timestamp;
     
+    //srs_warn("%#x %#x %#x %#x %#x", shared_video->payload[0], shared_video->payload[1],  shared_video->payload[2], shared_video->payload[3], shared_video->payload[4]);
+
     // drop any unknown header video.
     // @see https://github.com/ossrs/srs/issues/421
     if (!SrsFlvCodec::video_is_acceptable(shared_video->payload, shared_video->size)) {

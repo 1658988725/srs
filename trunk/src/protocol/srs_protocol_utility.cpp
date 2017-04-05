@@ -328,18 +328,34 @@ void srs_parse_rtmp_url(string url, string& tcUrl, string& stream)
     }
 }
 
-string srs_generate_rtmp_url(string server, int port, string vhost, string app, string stream)
+string srs_generate_rtmp_url(string server, int port, string vhost, string app, string stream, string param)
 {
     std::stringstream ss;
     
     ss << "rtmp://" << server << ":" << std::dec << port << "/" << app;
     
+	//srs_trace("vhost: %s\tserver: %s", vhost.c_str(), server.c_str());
+
     // when default or server is vhost, donot specifies the vhost in params.
     if (SRS_CONSTS_RTMP_DEFAULT_VHOST != vhost && server != vhost) {
         //ss << "...vhost..." << vhost;
         ss << "?vhost=" << vhost;
+    } else {
+    	ss << "?vhost=" << SRS_CONSTS_RTMP_DEFAULT_VHOST;
     }
     
+    if (!param.empty()) {
+       map<string, string>::iterator iter;
+       map<string,string> query;
+       srs_parse_query_string(param, query);
+       for (iter=query.begin(); iter!=query.end(); iter++) {
+    	   //srs_trace("param: %s = %s", iter->first.c_str(), iter->second.c_str());
+    	   if (strcasecmp(iter->first.c_str(), "vhost") != 0) {
+    		   ss << "&" << iter->first.c_str() << "=" << iter->second.c_str();
+    	   }
+       }
+    }
+
     if (!stream.empty()) {
         ss << "/" << stream;
     }
